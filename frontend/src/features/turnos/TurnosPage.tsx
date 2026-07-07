@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import TurnosList from './TurnosList';
 import TurnoForm from './TurnoForm';
-import { useTurnos, useCrearTurno, useCancelarTurno } from './useTurnos';
+import { useTurnos, useCrearTurno } from './useTurnos';
 import { Button, Modal } from '@shared/components';
 import type { TurnoFormData } from './turnoSchema';
 import type { Turno } from './types';

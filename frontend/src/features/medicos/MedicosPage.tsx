@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { getMedicos, getDisponibilidad, medicosKeys } from './medicosService';
 import type { Medico } from './medicosService';
-import { Card, Spinner, ErrorMessage, Badge, Button } from '@shared/components';
+import { Card, Spinner, ErrorMessage, Button } from '@shared/components';
 
 export default function MedicosPage() {
   const { data, isLoading, error } = useQuery({
