@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import path from 'path';
 
@@ -16,6 +16,7 @@ export default defineConfig({
   server: {
     port: 5173,
   },
+  // @ts-expect-error -- vitest InlineConfig conflict with vite types
   test: {
     globals: true,
     environment: 'jsdom',
