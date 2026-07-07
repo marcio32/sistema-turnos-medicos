@@ -1,0 +1,72 @@
+services:
+  api:
+    build:
+      context: ../backend/src/TurnosApi
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=TurnosMedicos;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=True
+      - Redis__Configuration=redis:6379
+      - Redis__InstanceName=TurnosApi_
+      - Sqs__ServiceUrl=http://localstack:4566
+      - Sqs__QueueName=turnos-events
+      - Sqs__Region=us-east-1
+    depends_on:
+      - sqlserver
+      - redis
+      - localstack
+    networks:
+      - turnos-network
+
+  worker:
+    build:
+      context: ../backend/src/TurnosApi.Worker
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Sqs__ServiceUrl=http://localstack:4566
+      - Sqs__QueueName=turnos-events
+      - Sqs__Region=us-east-1
+    depends_on:
+      - localstack
+    networks:
+      - turnos-network
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    ports:
+      - "1433:1433"
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - turnos-network
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - turnos-network
+
+  localstack:
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=sqs
+    volumes:
+      - "./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
+    networks:
+      - turnos-network
+
+networks:
+  turnos-network:
+    driver: bridge
+
+volumes:
+  sqlserver-data:
