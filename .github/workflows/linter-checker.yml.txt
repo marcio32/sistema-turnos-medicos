@@ -1,0 +1,37 @@
+name: Code Quality (Lint & Format)
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  quality-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Descarga el código del repositorio en la máquina virtual de GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Configura el entorno de Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Podés cambiarlo por la versión de Node que uses
+          cache: 'npm'
+
+      # 3. Instala las dependencias del proyecto de forma limpia
+      # Usamos --legacy-peer-deps por el conflicto de versiones que tuvimos antes
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      # 4. Corre el chequeo de formateo de Prettier
+      # El flag --check hace que falle si encuentra archivos mal formateados sin editarlos
+      - name: Run Prettier check
+        run: npx prettier --check .
+
+      # 5. Corre el validador de ESLint
+      - name: Run ESLint
+        run: npx eslint .
